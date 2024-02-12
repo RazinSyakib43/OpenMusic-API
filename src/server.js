@@ -1,4 +1,3 @@
-// mengimpor dotenv dan menjalankan konfigurasinya
 require('dotenv').config();
 
 const Hapi = require('@hapi/hapi');
@@ -41,13 +40,10 @@ const init = async () => {
       },
     },
   ]);
-  // penanganan client error secara internal.
 
   server.ext('onPreResponse', (request, h) => {
-    // mendapatkan konteks response dari request
     const { response } = request;
 
-    // penanganan client error secara internal.
     if (response instanceof ClientError) {
       const newResponse = h.response({
         status: 'fail',
