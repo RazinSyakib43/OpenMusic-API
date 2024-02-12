@@ -1,6 +1,7 @@
 class AlbumsHandler {
-  constructor(service) {
+  constructor(service, validator) {
     this._service = service;
+    this._validator = validator;
 
     this.postAlbumHandler = this.postAlbumHandler.bind(this);
     this.getAlbumsHandler = this.getAlbumsHandler.bind(this);
@@ -11,6 +12,7 @@ class AlbumsHandler {
 
   postAlbumHandler(request, h) {
     try {
+      this._validator.validateAlbumPayload(request.payload);
       const { name, year } = request.payload;
 
       const albumId = this._service.addAlbum({ name, year });
@@ -66,6 +68,8 @@ class AlbumsHandler {
 
   putAlbumByIdHandler(request, h) {
     try {
+      this._validator.validateAlbumPayload(request.payload);
+
       const { id } = request.params;
 
       this._service.editAlbumById(id, request.payload);
