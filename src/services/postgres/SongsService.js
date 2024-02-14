@@ -1,7 +1,7 @@
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const InvariantError = require('../../exceptions/InvariantError');
-const { mapDBToSongModel } = require('../../utils/SongUtil');
+const { mapDBToSongModel, mapDBToGetAllSongModel } = require('../../utils/SongUtil');
 const NotFoundError = require('../../exceptions/NotFoundError');
 
 class SongsService {
@@ -17,8 +17,8 @@ class SongsService {
     const updatedAt = createdAt;
 
     const query = {
-      text: 'INSERT INTO songs VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id',
-      values: [id, title, year, genre, performer, duration, albumId, createdAt, updatedAt],
+      text: 'INSERT INTO songs VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id',
+      values: [id, title, year, genre, performer, duration, albumId],
     };
 
     const result = await this._pool.query(query);
@@ -32,7 +32,7 @@ class SongsService {
 
   async getSongs() {
     const result = await this._pool.query('SELECT * FROM songs');
-    return result.rows.map(mapDBToSongModel);
+    return result.rows.map(mapDBToGetAllSongModel);
   }
 
   async getSongById(id) {
@@ -52,10 +52,9 @@ class SongsService {
   async editSongById(id, {
     title, year, genre, performer, duration, albumId,
   }) {
-    const updatedAt = new Date().toISOString();
     const query = {
-      text: 'UPDATE albums SET title = $1, year = $2, genre = $3, performer = $4, duration = $5, albumId = $6 WHERE id = $7 RETURNING id',
-      values: [title, year, genre, performer, duration, albumId, updatedAt, id],
+      text: 'UPDATE songs SET title = $1, year = $2, genre = $3, performer = $4, duration = $5, album_id = $6 WHERE id = $7 RETURNING id',
+      values: [title, year, genre, performer, duration, albumId, id],
     };
 
     const result = await this._pool.query(query);
