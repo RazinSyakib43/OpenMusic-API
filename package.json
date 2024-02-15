@@ -26,5 +26,14 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.29.1",
     "nodemon": "^3.0.3"
-  }
+  },
+  "optionalDependencies": {
+    "lodash.isarray": "^4.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=15.0.0 <16.0.0"
+  },
+  "bundledDependencies": [
+    "@generated/foo"
+  ]
 }
