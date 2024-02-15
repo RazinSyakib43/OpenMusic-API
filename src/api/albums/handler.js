@@ -1,3 +1,4 @@
+const autoBind = require('auto-bind');
 const ClientError = require('../../exceptions/ClientError');
 
 class AlbumsHandler {
@@ -5,11 +6,7 @@ class AlbumsHandler {
     this._service = service;
     this._validator = validator;
 
-    this.postAlbumHandler = this.postAlbumHandler.bind(this);
-    this.getAlbumsHandler = this.getAlbumsHandler.bind(this);
-    this.getAlbumByIdHandler = this.getAlbumByIdHandler.bind(this);
-    this.putAlbumByIdHandler = this.putAlbumByIdHandler.bind(this);
-    this.deleteAlbumByIdHandler = this.deleteAlbumByIdHandler.bind(this);
+    autoBind(this); // mem-bind nilai this untuk seluruh method sekaligus
   }
 
   async postAlbumHandler(request, h) {
