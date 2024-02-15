@@ -20,10 +20,12 @@ const mapDBToGetAllSongModel = ({
   id,
   title,
   performer,
+  albumId,
 }) => ({
   id,
   title,
   performer,
+  albumId,
 });
 
 module.exports = { mapDBToSongModel, mapDBToGetAllSongModel };
