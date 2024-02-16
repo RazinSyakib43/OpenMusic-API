@@ -3,6 +3,12 @@ const routes = (handler) => [
     method: 'POST',
     path: '/songs',
     handler: handler.postSongHandler,
+
+    // not implemented here, but it's just an example how to use auth strategy
+
+    // options: {
+    //   auth: 'openmusic_jwt',
+    // },
   },
   {
     method: 'GET',
