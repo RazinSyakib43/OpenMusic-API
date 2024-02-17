@@ -1,8 +1,9 @@
 const autoBind = require('auto-bind');
 
 class PlaylistsHandler {
-  constructor(service, validator) {
+  constructor(service, songService, validator) {
     this.service = service;
+    this.songService = songService;
     this.validator = validator;
 
     autoBind(this); // mem-bind nilai this untuk seluruh method sekaligus
@@ -60,6 +61,7 @@ class PlaylistsHandler {
     const { id: credentialId } = request.auth.credentials;
 
     await this.service.verifyPlaylistAccess(playlistId, credentialId);
+    await this.songService.getSongById(songId); // pastikan lagu tersebut ada
     await this.service.addSongToPlaylist(playlistId, songId);
 
     const response = h.response({

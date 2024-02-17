@@ -1,7 +1,7 @@
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const InvariantError = require('../../exceptions/InvariantError');
-const { mapDBToPlaylistModel } = require('../../utils/PlaylistUtil');
+// const { mapDBToPlaylistModel } = require('../../utils/PlaylistUtil');
 const NotFoundError = require('../../exceptions/NotFoundError');
 const AuthorizationError = require('../../exceptions/AuthorizationError');
 
@@ -39,7 +39,7 @@ class PlaylistsService {
       throw new NotFoundError('Playlist tidak ditemukan');
     }
 
-    return result.rows.map(mapDBToPlaylistModel)[0];
+    return result.rows;
   }
 
   async deletePlaylistById(id) {
