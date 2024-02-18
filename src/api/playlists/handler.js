@@ -55,12 +55,12 @@ class PlaylistsHandler {
   }
 
   async postSongToPlaylistHandler(request, h) {
-    this.validator.validatePostPlatlistSongPayload(request.payload);
+    this.validator.validatePlaylistSongPayload(request.payload);
     const { songId } = request.payload;
     const { playlistId } = request.params;
     const { id: credentialId } = request.auth.credentials;
 
-    await this.service.verifyPlaylistAccess(playlistId, credentialId);
+    await this.service.verifyPlaylistOwner(playlistId, credentialId);
     await this.songService.getSongById(songId); // pastikan lagu tersebut ada
     await this.service.addSongToPlaylist(playlistId, songId);
 
@@ -76,7 +76,7 @@ class PlaylistsHandler {
     const { playlistId } = request.params;
     const { id: credentialId } = request.auth.credentials;
 
-    await this.service.verifyPlaylistAccess(playlistId, credentialId);
+    await this.service.verifyPlaylistOwner(playlistId, credentialId);
     const playlist = await this.service.getSongsFromPlaylist(playlistId);
     return {
       status: 'success',
@@ -92,7 +92,9 @@ class PlaylistsHandler {
     const { songId } = request.payload;
     const { id: credentialId } = request.auth.credentials;
 
-    await this.service.verifyPlaylistAccess(playlistId, credentialId);
+    console.log(playlistId, songId, credentialId);
+
+    await this.service.verifyPlaylistOwner(playlistId, credentialId);
     await this.service.deleteSongFromPlaylist(playlistId, songId);
 
     return {
