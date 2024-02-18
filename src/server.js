@@ -110,7 +110,7 @@ const init = async () => {
   ]);
 
   server.ext('onPreResponse', (request, h) => {
-    // mendapatkan konteks response dari request
+    // mendapatkan konteks response dari requestE
     const { response } = request;
 
     if (response instanceof Error) {

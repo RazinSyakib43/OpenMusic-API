@@ -73,6 +73,15 @@ class PlaylistsService {
   }
 
   async getSongsFromPlaylist(playlistId) {
+    const playlistQuery = {
+      text: `SELECT playlists.id, playlists.name, users.username FROM playlists
+        LEFT JOIN users ON users.id = playlists.owner
+        WHERE playlists.id = $1`,
+      values: [playlistId],
+    };
+
+    const playlistResult = await this.pool.query(playlistQuery);
+
     const query = {
       text: `SELECT songs.id, songs.title, songs.performer FROM songs
         LEFT JOIN playlistsongs ON songs.id = playlistsongs.song_id
@@ -82,7 +91,24 @@ class PlaylistsService {
 
     const result = await this.pool.query(query);
 
-    return result.rows;
+    if (!playlistResult.rows.length) {
+      throw new NotFoundError('Playlist tidak ditemukan');
+    }
+
+    if (!result.rows.length) {
+      throw new NotFoundError('Playlist ini tidak memiliki Lagu (Song)');
+    }
+
+    const playlistName = playlistResult.rows[0].name;
+    const playlistOwner = playlistResult.rows[0].username;
+    const songs = result.rows;
+
+    return {
+      id: playlistId,
+      name: playlistName,
+      username: playlistOwner,
+      songs,
+    };
   }
 
   async deleteSongFromPlaylist(playlistId, songId) {
