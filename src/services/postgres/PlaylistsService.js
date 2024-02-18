@@ -10,31 +10,6 @@ class PlaylistsService {
     this.pool = new Pool();
   }
 
-  async verifyPlaylistOwner(id, owner) {
-    const query = {
-      text: 'SELECT owner FROM playlists WHERE id = $1',
-      values: [id],
-    };
-    const result = await this.pool.query(query);
-    if (!result.rows.length) {
-      throw new NotFoundError('Playlist tidak ditemukan');
-    }
-    const playlist = result.rows[0];
-    if (playlist.owner !== owner) {
-      throw new AuthorizationError('Anda tidak berhak mengakses resource ini');
-    }
-  }
-
-  async verifyPlaylistAccess(playlistId, userId) {
-    try {
-      await this.verifyPlaylistOwner(playlistId, userId);
-    } catch (error) {
-      if (error instanceof NotFoundError) {
-        throw error;
-      }
-    }
-  }
-
   async addPlaylist({ name, owner }) {
     const id = `playlist-${nanoid(16)}`;
 
@@ -146,6 +121,36 @@ class PlaylistsService {
 
     if (!result.rowCount) {
       throw new InvariantError('Lagu gagal dihapus');
+    }
+  }
+
+  async verifyPlaylistOwner(id, owner) {
+    const query = {
+      text: 'SELECT owner FROM playlists WHERE id = $1',
+      values: [id],
+    };
+    const result = await this.pool.query(query);
+    if (!result.rows.length) {
+      throw new NotFoundError('Playlist tidak ditemukan');
+    }
+    const playlist = result.rows[0];
+    if (playlist.owner !== owner) {
+      throw new AuthorizationError('Anda tidak berhak mengakses resource ini');
+    }
+  }
+
+  async verifyPlaylistAccess(playlistId, userId) {
+    try {
+      await this.verifyPlaylistOwner(playlistId, userId);
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw error;
+      }
+      try {
+        await this.collaborationService.verifyCollaborator(playlistId, userId);
+      } catch {
+        throw error;
+      }
     }
   }
 }
