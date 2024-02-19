@@ -43,6 +43,7 @@ class AlbumsService {
     };
 
     const result = await this.pool.query(query);
+    console.log(result.rows.map(mapDBToAlbumModel));
 
     if (!result.rows.length) {
       throw new NotFoundError('Album tidak ditemukan');
@@ -50,8 +51,14 @@ class AlbumsService {
 
     const songsResult = await this.pool.query(songQuery);
 
+    const albumId = result.rows[0].id;
+    const { name, year, cover } = result.rows[0];
+
     return {
-      ...result.rows.map(mapDBToAlbumModel)[0],
+      id: albumId,
+      name,
+      year,
+      coverUrl: cover,
       songs: songsResult.rows,
     };
   }
