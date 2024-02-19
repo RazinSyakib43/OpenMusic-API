@@ -119,15 +119,26 @@ class AlbumsService {
   async addUserAlbumLike(albumId, userId) {
     const id = `user-album-like-${nanoid(16)}`;
 
-    const checkAlbumLikeQuery = {
+    const AlbumLikeQuery = {
       text: 'SELECT id FROM user_album_likes WHERE user_id = $1 AND album_id = $2',
       values: [userId, albumId],
     };
 
-    const checkAlbumLikeResult = await this.pool.query(checkAlbumLikeQuery);
+    const AlbumLikeResult = await this.pool.query(AlbumLikeQuery);
 
-    if (checkAlbumLikeResult.rows.length) {
+    if (AlbumLikeResult.rows.length > 0) {
       throw new InvariantError('Gagal menambahkan like album. User telah memberikan like pada album');
+    }
+
+    const AlbumQuery = {
+      text: 'SELECT id FROM albums WHERE id = $1',
+      values: [albumId],
+    };
+
+    const AlbumResult = await this.pool.query(AlbumQuery);
+
+    if (!AlbumResult.rows.length) {
+      throw new NotFoundError('Album tidak ditemukan');
     }
 
     const query = {
