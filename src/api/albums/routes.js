@@ -1,3 +1,5 @@
+const path = require('path');
+
 const routes = (handler) => [
   {
     method: 'POST',
@@ -34,6 +36,15 @@ const routes = (handler) => [
         multipart: true,
         output: 'stream',
         maxBytes: 512000,
+      },
+    },
+  },
+  {
+    method: 'GET',
+    path: '/albums/cover/{param*}',
+    handler: {
+      directory: {
+        path: path.resolve(__dirname, 'api/uploads/file/images'),
       },
     },
   },
