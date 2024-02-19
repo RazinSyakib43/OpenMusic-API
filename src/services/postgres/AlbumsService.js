@@ -119,6 +119,17 @@ class AlbumsService {
   async addUserAlbumLike(albumId, userId) {
     const id = `user-album-like-${nanoid(16)}`;
 
+    const checkAlbumLikeQuery = {
+      text: 'SELECT id FROM user_album_likes WHERE user_id = $1 AND album_id = $2',
+      values: [userId, albumId],
+    };
+
+    const checkAlbumLikeResult = await this.pool.query(checkAlbumLikeQuery);
+
+    if (checkAlbumLikeResult.rows.length) {
+      throw new InvariantError('Gagal menambahkan like album. User telah memberikan like pada album');
+    }
+
     const query = {
       text: 'INSERT INTO user_album_likes VALUES($1, $2, $3) RETURNING id',
       values: [id, userId, albumId],
@@ -126,11 +137,11 @@ class AlbumsService {
 
     const result = await this.pool.query(query);
 
-    if (!result.rows[0].id) {
+    if (!result) {
       throw new InvariantError('Gagal menambahkan like album');
     }
 
-    await this.cacheService.delete(`albums:${userId}`);
+    await this.cacheService.delete(`albums:${albumId}`);
   }
 
   async getUserAlbumLikeCount(albumId) {
@@ -145,13 +156,17 @@ class AlbumsService {
 
       const result = await this.pool.query(query);
 
+      if (!result) {
+        throw new NotFoundError('Album tidak ditemukan');
+      }
+
       await this.cacheService.set(`albums:${albumId}`, JSON.stringify(result.rows[0].count));
 
       if (!result.rows.length) {
         throw new InvariantError('Gagal mengambil like album');
       }
 
-      return result.rows[0].count;
+      return Number(result.rows[0].count);
     }
   }
 
@@ -167,7 +182,7 @@ class AlbumsService {
       throw new InvariantError('Gagal menghapus like album. Id tidak ditemukan');
     }
 
-    await this.cacheService.delete(`albums:${userId}`);
+    await this.cacheService.delete(`albums:${albumId}`);
   }
 }
 
