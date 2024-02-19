@@ -5,8 +5,9 @@ const { mapDBToAlbumModel } = require('../../utils/AlbumUtil');
 const NotFoundError = require('../../exceptions/NotFoundError');
 
 class AlbumsService {
-  constructor() {
+  constructor(cacheService) {
     this.pool = new Pool();
+    this.cacheService = cacheService;
   }
 
   async addAlbum({ name, year }) {
@@ -128,21 +129,30 @@ class AlbumsService {
     if (!result.rows[0].id) {
       throw new InvariantError('Gagal menambahkan like album');
     }
+
+    await this.cacheService.delete(`albums:${userId}`);
   }
 
   async getUserAlbumLikeCount(albumId) {
-    const query = {
-      text: 'SELECT  FROM user_album_likes WHERE album_id = $1',
-      values: [albumId],
-    };
+    try {
+      const result = await this.cacheService.get(`albums:${albumId}`);
+      return JSON.parse(result);
+    } catch {
+      const query = {
+        text: 'SELECT COUNT(user_id) FROM user_album_likes WHERE album_id = $1',
+        values: [albumId],
+      };
 
-    const result = await this.pool.query(query);
+      const result = await this.pool.query(query);
 
-    if (!result.rows.length) {
-      throw new NotFoundError('Gagal mendapatkan jumlah like album');
+      await this.cacheService.set(`albums:${albumId}`, JSON.stringify(result.rows[0].count));
+
+      if (!result.rows.length) {
+        throw new InvariantError('Gagal mengambil like album');
+      }
+
+      return result.rows[0].count;
     }
-
-    return result.rows[0].count;
   }
 
   async deleteUserAlbumLike(albumId, userId) {
@@ -156,6 +166,8 @@ class AlbumsService {
     if (!result.rows.length) {
       throw new InvariantError('Gagal menghapus like album. Id tidak ditemukan');
     }
+
+    await this.cacheService.delete(`albums:${userId}`);
   }
 }
 
