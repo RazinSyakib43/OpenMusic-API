@@ -85,6 +85,7 @@ class AlbumsHandler {
       message: 'Gambar berhasil diunggah',
     });
     response.code(201);
+    return response;
   }
 }
 
