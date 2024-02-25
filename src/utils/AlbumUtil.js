@@ -7,7 +7,7 @@ const mapDBToAlbumModel = ({
   id,
   name,
   year,
-  cover,
+  coverUrl: cover,
 });
 
 module.exports = { mapDBToAlbumModel };
