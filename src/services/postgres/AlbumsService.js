@@ -55,26 +55,6 @@ class AlbumsService {
       ...result.rows.map(mapDBToAlbumModel)[0],
       songs: songsResult.rows,
     };
-
-    // const result = await this.pool.query(query);
-    // console.log(result.rows.map(mapDBToAlbumModel));
-
-    // if (!result.rows.length) {
-    //   throw new NotFoundError('Album tidak ditemukan');
-    // }
-
-    // const songsResult = await this.pool.query(songQuery);
-
-    // const albumId = result.rows[0].id;
-    // const { name, year, cover } = result.rows[0];
-
-    // return {
-    //   id: albumId,
-    //   name,
-    //   year,
-    //   coverUrl: cover,
-    //   songs: songsResult.rows,
-    // };
   }
 
   async editAlbumById(id, { name, year }) {
