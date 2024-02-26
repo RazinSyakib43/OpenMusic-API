@@ -95,7 +95,7 @@ class PlaylistsHandler {
     console.log(playlistId, songId, credentialId);
 
     await this.service.verifyPlaylistAccess(playlistId, credentialId);
-    await this.service.deleteSongFromPlaylist(playlistId, songId);
+    await this.service.deleteSongFromPlaylist(playlistId, songId, credentialId);
 
     return {
       status: 'success',
