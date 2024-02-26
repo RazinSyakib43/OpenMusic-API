@@ -1,10 +1,11 @@
+const autoBind = require('auto-bind');
+
 class UsersHandler {
   constructor(service, validator) {
     this.service = service;
     this.validator = validator;
 
-    this.postUserHandler = this.postUserHandler.bind(this);
-    this.getUserByIdHandler = this.getUserByIdHandler.bind(this);
+    autoBind(this); // mem-bind nilai this untuk seluruh method sekaligus
   }
 
   async postUserHandler(request, h) {
