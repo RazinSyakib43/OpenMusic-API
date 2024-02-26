@@ -1,7 +1,6 @@
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const InvariantError = require('../../exceptions/InvariantError');
-// const { mapDBToPlaylistModel } = require('../../utils/PlaylistUtil');
 const NotFoundError = require('../../exceptions/NotFoundError');
 const AuthorizationError = require('../../exceptions/AuthorizationError');
 
@@ -38,10 +37,6 @@ class PlaylistsService {
     };
 
     const result = await this.pool.query(query);
-
-    if (!result.rows.length) {
-      throw new NotFoundError('Playlist tidak ditemukan');
-    }
 
     return result.rows;
   }
