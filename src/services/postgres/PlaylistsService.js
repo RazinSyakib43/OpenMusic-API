@@ -142,7 +142,7 @@ class PlaylistsService {
     }
 
     if (!deletePlaylistSongActivityResult.rowCount) {
-      throw new InvariantError('Playlist song activity gagal dihapus');
+      throw new InvariantError('Playlist song activity gagal ditambahkan');
     }
   }
 
