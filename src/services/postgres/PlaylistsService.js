@@ -1,7 +1,6 @@
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const InvariantError = require('../../exceptions/InvariantError');
-// const { mapDBToPlaylistModel } = require('../../utils/PlaylistUtil');
 const NotFoundError = require('../../exceptions/NotFoundError');
 const AuthorizationError = require('../../exceptions/AuthorizationError');
 
@@ -38,10 +37,6 @@ class PlaylistsService {
     };
 
     const result = await this.pool.query(query);
-
-    if (!result.rows.length) {
-      throw new NotFoundError('Playlist tidak ditemukan');
-    }
 
     return result.rows;
   }
@@ -136,7 +131,7 @@ class PlaylistsService {
 
     const deletePlaylistSongActivityQuery = {
       text: 'INSERT INTO playlist_song_activities VALUES($1, $2, $3, $4, $5, $6)',
-      values: [playlistSongActivityId, playlistId, songId, userId, 'add', new Date()],
+      values: [playlistSongActivityId, playlistId, songId, userId, 'delete', new Date()],
     };
 
     const result = await this.pool.query(query);
@@ -187,7 +182,8 @@ class PlaylistsService {
       FROM playlist_song_activities
       LEFT JOIN users ON users.id = playlist_song_activities.user_id
       LEFT JOIN songs ON songs.id = playlist_song_activities.song_id
-      WHERE playlist_song_activities.playlist_id = $1`,
+      WHERE playlist_song_activities.playlist_id = $1
+      ORDER BY playlist_song_activities.time`,
       values: [playlistId],
     };
     const result = await this.pool.query(query);

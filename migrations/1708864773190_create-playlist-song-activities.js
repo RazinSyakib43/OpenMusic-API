@@ -34,7 +34,7 @@ exports.up = (pgm) => {
     Menambahkan constraint UNIQUE, kombinasi dari kolom playlist_id, song_id, dan user_id.
     Guna menghindari duplikasi data antara nilai keduanya.
   */
-  pgm.addConstraint('playlist_song_activities', 'unique_playlist_id_song_id_user_id', 'UNIQUE(playlist_id, song_id, user_id)');
+  pgm.addConstraint('playlist_song_activities', 'unique_playlist_id_song_id_user_id', 'UNIQUE(playlist_id, song_id, user_id, action)');
 
   // memberikan constraint foreign key pada kolom playlist_id terhadap playlists.id
   pgm.addConstraint('playlist_song_activities', 'fk_playlist_song_activities.playlist_id_playlists.id', 'FOREIGN KEY(playlist_id) REFERENCES playlists(id) ON DELETE CASCADE');
