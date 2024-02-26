@@ -126,16 +126,28 @@ class PlaylistsService {
     };
   }
 
-  async deleteSongFromPlaylist(playlistId, songId) {
+  async deleteSongFromPlaylist(playlistId, songId, userId) {
+    const playlistSongActivityId = `playlistsongactivity-${nanoid(16)}`;
+
     const query = {
       text: 'DELETE FROM playlistsongs WHERE playlist_id = $1 AND song_id = $2 RETURNING id',
       values: [playlistId, songId],
     };
 
+    const deletePlaylistSongActivityQuery = {
+      text: 'INSERT INTO playlist_song_activities VALUES($1, $2, $3, $4, $5, $6)',
+      values: [playlistSongActivityId, playlistId, songId, userId, 'delete', new Date()],
+    };
+
     const result = await this.pool.query(query);
+    const deletePlaylistSongActivityResult = await this.pool.query(deletePlaylistSongActivityQuery);
 
     if (!result.rowCount) {
       throw new InvariantError('Lagu gagal dihapus');
+    }
+
+    if (!deletePlaylistSongActivityResult.rowCount) {
+      throw new InvariantError('Playlist song activity gagal dihapus');
     }
   }
 
@@ -175,7 +187,8 @@ class PlaylistsService {
       FROM playlist_song_activities
       LEFT JOIN users ON users.id = playlist_song_activities.user_id
       LEFT JOIN songs ON songs.id = playlist_song_activities.song_id
-      WHERE playlist_song_activities.playlist_id = $1`,
+      WHERE playlist_song_activities.playlist_id = $1
+      ORDER BY playlist_song_activities.time`,
       values: [playlistId],
     };
     const result = await this.pool.query(query);
