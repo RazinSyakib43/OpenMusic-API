@@ -5,7 +5,7 @@ class PlaylistsService {
         this._pool = new Pool();
     }
 
-    async getNotes(playlistId) {
+    async getSongsFromPlaylist(playlistId) {
         const playlistQuery = {
             text: `SELECT playlists.id, playlists.name, users.username FROM playlists
             LEFT JOIN users ON users.id = playlists.owner
