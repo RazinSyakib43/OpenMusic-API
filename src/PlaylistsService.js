@@ -13,7 +13,7 @@ class PlaylistsService {
             values: [playlistId],
         };
 
-        const playlistResult = await this.pool.query(playlistQuery);
+        const playlistResult = await this._pool.query(playlistQuery);
 
         const query = {
             text: `SELECT songs.id, songs.title, songs.performer FROM songs
@@ -22,7 +22,7 @@ class PlaylistsService {
             values: [playlistId],
         };
 
-        const result = await this.pool.query(query);
+        const result = await this._pool.query(query);
 
         const playlistName = playlistResult.rows[0].name;
         const playlistOwner = playlistResult.rows[0].username;
