@@ -44,7 +44,7 @@ const routes = (handler) => [
     path: '/albums/cover/{param*}',
     handler: {
       directory: {
-        path: path.resolve(__dirname, 'api/uploads/file/images'),
+        path: path.resolve(__dirname, '../uploads/file/images'),
       },
     },
   },

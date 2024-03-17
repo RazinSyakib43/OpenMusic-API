@@ -138,7 +138,7 @@ class AlbumsService {
   async getUserAlbumLikeCount(albumId) {
     try {
       const result = await this.cacheService.get(`albums:${albumId}`);
-      return JSON.parse(result);
+      return { likes: JSON.parse(result), isCache: 'cache' };
     } catch {
       const query = {
         text: 'SELECT COUNT(user_id) FROM user_album_likes WHERE album_id = $1',
@@ -151,13 +151,13 @@ class AlbumsService {
         throw new NotFoundError('Album tidak ditemukan');
       }
 
-      await this.cacheService.set(`albums:${albumId}`, JSON.stringify(result.rows[0].count));
+      await this.cacheService.set(`albums:${albumId}`, JSON.stringify(result.rows[0].count), 1800);
 
       if (!result.rows.length) {
         throw new InvariantError('Gagal mengambil like album');
       }
 
-      return Number(result.rows[0].count);
+      return { likes: result.rows[0].count, isCache: 'db' };
     }
   }
 

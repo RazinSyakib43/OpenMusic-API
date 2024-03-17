@@ -102,17 +102,21 @@ class AlbumsHandler {
     return response;
   }
 
-  async getLikesAlbumByIdHandler(request) {
+  async getLikesAlbumByIdHandler(request, h) {
     const { id } = request.params;
 
-    const likes = await this.service.getUserAlbumLikeCount(id);
+    const { likes, isCache } = await this.service.getUserAlbumLikeCount(id);
 
-    return {
+    const response = h.response({
       status: 'success',
       data: {
-        likes,
+        likes: Number(likes),
       },
-    };
+    });
+
+    response.header('X-Data-Source', isCache);
+
+    return response;
   }
 
   async deleteLikeAlbumByIdHandler(request) {
