@@ -25,14 +25,14 @@ class PlaylistsService {
         const result = await this._pool.query(query);
 
         const playlistName = playlistResult.rows[0].name;
-        const playlistOwner = playlistResult.rows[0].username;
         const songs = result.rows;
 
         return {
-            id: playlistId,
-            name: playlistName,
-            username: playlistOwner,
-            songs,
+            playlist: {
+                id: playlistId,
+                name: playlistName,
+                songs,
+            }
         };
     }
 }
