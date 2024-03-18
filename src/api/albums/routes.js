@@ -41,10 +41,10 @@ const routes = (handler) => [
   },
   {
     method: 'GET',
-    path: '/albums/cover/{param*}',
+    path: '/upload/pictures/{param*}',
     handler: {
       directory: {
-        path: path.resolve(__dirname, '../uploads/file/images'),
+        path: path.resolve(__dirname, '../uploads/pictures'),
       },
     },
   },
